@@ -1,0 +1,37 @@
+name: Build Signed AAB
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with:
+          java-version: '17'
+          distribution: 'temurin'
+      - name: Unzip project
+        run: |
+          unzip IMSGCApp.zip
+          ls -la
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+      - name: Decode Keystore
+        run: |
+          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
+      - name: Make gradlew executable
+        run: chmod +x gradlew
+      - name: Build AAB
+        env:
+          KEYSTORE_PATH: keystore.jks
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+        run: ./gradlew bundleRelease
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IMSGC-Portal-AAB
+          path: app/build/outputs/bundle/release/app-release.aab
+          retention-days: 30
