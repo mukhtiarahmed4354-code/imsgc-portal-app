@@ -17,10 +17,6 @@ jobs:
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
+        run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
       - name: Make gradlew executable
-        run: chmod +x gradlew
-      - name: Build AAB
-        env:
-    
+        run: chmod
