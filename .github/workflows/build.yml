@@ -16,6 +16,11 @@ jobs:
         run: unzip -o IMSGCApp.zip
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+      - name: Create gradle.properties
+        run: |
+          echo "android.useAndroidX=true" > gradle.properties
+          echo "android.enableJetifier=true" >> gradle.properties
+          echo "android.suppressUnsupportedCompileSdk=35" >> gradle.properties
       - name: Decode Keystore
         run: echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
       - name: Make gradlew executable
