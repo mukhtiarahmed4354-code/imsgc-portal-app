@@ -37,3 +37,4 @@ jobs:
           name: IMSGC-Portal-AAB
           path: app/build/outputs/bundle/release/app-release.aab
           retention-days: 30
+        
