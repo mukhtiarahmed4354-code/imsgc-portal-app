@@ -13,9 +13,7 @@ jobs:
           java-version: '17'
           distribution: 'temurin'
       - name: Unzip project
-        run: |
-          unzip IMSGCApp.zip
-          ls -la
+        run: unzip -o IMSGCApp.zip
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
       - name: Decode Keystore
@@ -25,13 +23,4 @@ jobs:
         run: chmod +x gradlew
       - name: Build AAB
         env:
-          KEYSTORE_PATH: keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease
-      - uses: actions/upload-artifact@v4
-        with:
-          name: IMSGC-Portal-AAB
-          path: app/build/outputs/bundle/release/app-release.aab
-          retention-days: 30
+    
