@@ -20,6 +20,8 @@ jobs:
           unzip -o "$ZIP"
       - name: Setup Android SDK
         uses: android-actions/setup-android@v3
+        with:
+          packages: 'platform-tools'
       - name: Create gradle.properties
         run: |
           echo "android.useAndroidX=true" > gradle.properties
