@@ -1,4 +1,7 @@
-name: Build Signed AAB + APK
+name: Deploy Portal to Netlify
+
+# Deploys the portal (index.html + assets + _redirects + _headers at the repo root)
+# to the existing inspiredpk.com Netlify site on every push to main.
 
 on:
   push:
@@ -6,47 +9,20 @@ on:
   workflow_dispatch:
 
 jobs:
-  build:
+  deploy:
     runs-on: ubuntu-latest
-
     steps:
-      - name: Checkout code
+      - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Set up JDK 17
-        uses: actions/setup-java@v4
-        with:
-          java-version: '17'
-          distribution: 'temurin'
-
-      - name: Setup Gradle
-        uses: gradle/actions/setup-gradle@v3
-
-      - name: Make gradlew executable
-        run: chmod +x ./gradlew
-
-      - name: Decode Keystore
-        run: |
-          echo "${{ secrets.KEYSTORE_BASE64 }}" | base64 --decode > app/keystore.jks
-
-      - name: Build Release AAB and APK
+      - name: Deploy to Netlify (production)
         env:
-          KEYSTORE_PATH: keystore.jks
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        run: ./gradlew bundleRelease assembleRelease
-
-      - name: Upload AAB
-        uses: actions/upload-artifact@v4
-        with:
-          name: IMSGC-Portal-AAB
-          path: app/build/outputs/bundle/release/app-release.aab
-          retention-days: 30
-
-      - name: Upload APK (install directly on phone)
-        uses: actions/upload-artifact@v4
-        with:
-          name: IMSGC-Portal-APK
-          path: app/build/outputs/apk/release/app-release.apk
-          retention-days: 30
+          NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
+          NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
+        run: |
+          npx --yes netlify-cli@17 deploy \
+            --prod \
+            --dir="." \
+            --site="$NETLIFY_SITE_ID" \
+            --auth="$NETLIFY_AUTH_TOKEN" \
+            --message "Deploy from GitHub ${{ github.sha }}"
