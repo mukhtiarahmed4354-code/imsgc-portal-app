@@ -16,6 +16,10 @@ jobs:
       - name: Unzip the Android project
         run: unzip -o IMSGCApp_v1.5.0_v10_firebase.zip -d project
 
+      - name: Enable AndroidX (required by Firebase)
+        run: |
+          printf 'android.useAndroidX=true\nandroid.enableJetifier=true\norg.gradle.jvmargs=-Xmx2048m\n' > project/gradle.properties
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
